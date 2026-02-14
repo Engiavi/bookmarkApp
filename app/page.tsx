@@ -25,6 +25,11 @@ export default function Home() {
     };
   }, []);
 
+  const userName =
+    user?.user_metadata?.full_name ||
+    user?.user_metadata?.name ||
+    "User";
+
   return (
     <main className="max-w-7xl mx-auto px-6 py-10 space-y-10">
       
@@ -35,6 +40,10 @@ export default function Home() {
         </h1>
         <AuthButton user={user} />
       </div>
+
+    <h2 className="text-2xl font-bold">
+        {userName}, what do you want to bookmark today? 
+      </h2>
 
       {!user && (
         <div className="bg-white p-8 rounded-2xl shadow text-center">
