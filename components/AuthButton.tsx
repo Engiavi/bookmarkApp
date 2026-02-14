@@ -5,13 +5,21 @@ import { supabase } from "@/lib/supabase";
 export default function AuthButton({ user }: { user: any }) {
   const login = async () => {
     await supabase.auth.signInWithOAuth({
-      provider: "google",
-    });
+  provider: "google",
+  options: {
+    queryParams: {
+      prompt: "select_account",
+    },
+  },
+});
+
   };
 
   const logout = async () => {
-    await supabase.auth.signOut();
-  };
+  await supabase.auth.signOut();
+  window.location.reload();
+};
+
 
   if (user) {
     return (
