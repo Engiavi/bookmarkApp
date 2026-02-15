@@ -3,7 +3,12 @@
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 
-export default function BookmarkForm({ user }: { user: any }) {
+export default function BookmarkForm({user, 
+  onBookmarkAdded 
+}: { 
+  user: any; 
+  onBookmarkAdded?: (bookmark: any) => void 
+}) {
   const [title, setTitle] = useState("");
   const [url, setUrl] = useState("");
 
@@ -54,6 +59,11 @@ export default function BookmarkForm({ user }: { user: any }) {
       console.error("Insert error:", error.message);
       alert(error.message);
       return;
+    }
+
+    //Tell the list to add it instantly
+    if (data && onBookmarkAdded) {
+      onBookmarkAdded(data);
     }
 
     setTitle("");

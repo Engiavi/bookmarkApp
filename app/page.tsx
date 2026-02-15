@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import AuthButton from "@/components/AuthButton";
 import BookmarkForm from "@/components/BookmarkForm";
@@ -8,6 +8,7 @@ import BookmarkList from "@/components/BookmarkList";
 
 export default function Home() {
   const [user, setUser] = useState<any>(null);
+  const bookmarkListRef = useRef<{ addBookmark: (newBookmark: any) => void }>(null);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -30,6 +31,12 @@ export default function Home() {
     user?.user_metadata?.name ||
     "User";
 
+  const handleBookmarkAdded = (newBookmark: any) => {
+    if (bookmarkListRef.current) {
+      bookmarkListRef.current.addBookmark(newBookmark);
+    }
+  };
+
   return (
     <main className="max-w-7xl mx-auto px-6 py-10 space-y-10">
       
@@ -41,7 +48,7 @@ export default function Home() {
         <AuthButton user={user} />
       </div>
 
-    <h2 className="text-2xl font-bold">
+      <h2 className="text-2xl font-bold">
         {userName}, what do you want to bookmark today? 
       </h2>
 
@@ -56,10 +63,10 @@ export default function Home() {
       {user && (
         <>
           <div className="max-w-2xl">
-            <BookmarkForm user={user} />
+            <BookmarkForm user={user} onBookmarkAdded={handleBookmarkAdded} />
           </div>
 
-          <BookmarkList user={user} />
+          <BookmarkList ref={bookmarkListRef} user={user} />
         </>
       )}
     </main>

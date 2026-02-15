@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, forwardRef, useImperativeHandle } from "react";
 import { supabase } from "@/lib/supabase";
 
 const lightColors = [
@@ -13,8 +13,20 @@ const lightColors = [
   "bg-orange-100",
 ];
 
-export default function BookmarkList({ user }: { user: any }) {
+// Use forwardRef + ref type
+const BookmarkList = forwardRef<{ addBookmark: (newBookmark: any) => void }, { user: any }>(({ user }, ref) => {
   const [bookmarks, setBookmarks] = useState<any[]>([]);
+
+  // Expose method to parent via ref
+  useImperativeHandle(ref, () => ({
+    addBookmark: (newBookmark: any) => {
+      setBookmarks((prev) => {
+        // Prevent duplicate if realtime arrives later
+        if (prev.some((b) => b.id === newBookmark.id)) return prev;
+        return [newBookmark, ...prev];
+      });
+    },
+  }));
 
   // 🔹 Fetch existing bookmarks
   const fetchBookmarks = async () => {
@@ -181,4 +193,8 @@ export default function BookmarkList({ user }: { user: any }) {
       })}
     </div>
   );
-}
+});
+
+BookmarkList.displayName = "BookmarkList";
+
+export default BookmarkList;
